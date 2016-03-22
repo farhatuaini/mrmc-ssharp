@@ -1,0 +1,124 @@
+#
+#	WARNING: Do Not Remove This Section
+#
+#       $LastChangedRevision: 415 $
+#       $LastChangedDate: 2010-12-18 17:21:05 +0100 (Sa, 18. Dez 2010) $
+#       $LastChangedBy: davidjansen $
+#
+#	MRMC is a model checker for discrete-time and continuous-time Markov
+#	reward models. It supports reward extensions of PCTL and CSL (PRCTL
+#	and CSRL), and allows for the automated verification of properties
+#	concerning long-run and instantaneous rewards as well as cumulative
+#	rewards.
+#
+#	Copyright (C) The University of Twente, 2004-2006.
+#       Authors: Maneesh Khattri, Ivan Zapreev, David N. Jansen
+#
+#	This program is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU General Public License
+#	as published by the Free Software Foundation; either version 2
+#	of the License, or (at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#	MA  02110-1301, USA.
+#
+#	Main contact:
+#		Lehrstuhl für Informatik 2, RWTH Aachen University
+#		Ahornstrasse 55, 52074 Aachen, Germany
+#		E-mail: info@mrmc-tool.org
+#
+#       Old contact:
+#		Formal Methods and Tools Group, University of Twente,
+#		P.O. Box 217, 7500 AE Enschede, The Netherlands,
+#		Phone: +31 53 4893767, Fax: +31 53 4893247,
+#		E-mail: mrmc@cs.utwente.nl
+#
+#	Source description: The definitions file, tested with gcc v. 4.0.1
+#
+
+EXEC = $(MRMC_HOME_DIR)/bin/mrmc
+
+#The GSL home directory, just in case you have to set it up
+GSL_HOME = /usr
+
+SUBDIRS =	. algorithms algorithms/random_numbers \
+		io io/parser \
+		lumping modelchecking storage
+INCLUDE_DIR = $(MRMC_HOME_DIR)/include
+INCLUDES = $(patsubst %/.,%,$(SUBDIRS:%=-I$(INCLUDE_DIR)/%)) \
+	-I$(GSL_HOME)/include \
+	-I$(MRMC_HOME_DIR)/obj
+
+CC = gcc
+
+#The common compilation parameters
+CPPFLAGS	= -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 $(INCLUDES)
+# The keyword "inline" is mostly superfluous, as gcc inlines functions even
+# without an explicit request. The following line makes "inline" invisible to
+# gcc (ANSI C does not support this keyword). David N. Jansen
+CPPFLAGS += -Dinline=
+
+CFLAGS		= -Wall -Wextra -pedantic
+# "-pedantic" only works if one also chooses ANSI C:
+CFLAGS += -ansi
+# generate more warnings:
+CFLAGS += -Wcast-align -Wcast-qual \
+        -Wdeclaration-after-statement -Wdisabled-optimization -Wformat \
+        -Winit-self -Winline -Winvalid-pch -Wmissing-declarations \
+        -Wmissing-format-attribute -Wmissing-include-dirs \
+        -Wmissing-prototypes -Wnested-externs -Wpacked -Wshadow -Wswitch-enum \
+        -Wstrict-prototypes -Wwrite-strings -Wno-unused-function
+
+# Even more warnings, some spurious:
+# CFLAGS += -Wbad-function-cast -Wconversion -Wformat=2 -Wold-style-definition \
+#       -Wredundant-decls -Wswitch-default -Wundef
+# Many spurious warnings:
+# CFLAGS += -Wtraditional
+
+# For gcc 4.3.0, you may also add:
+# CFLAGS += -Wc++-compat -Wlogical-op -Wstrict-overflow=4 \
+#       -Wtraditional-conversion -Wunsafe-loop-optimizations -Wvla \
+#       -Wvolatile-register-var
+
+#CFLAGS += -Werror
+
+#The Release version
+CFLAGS	+= -O3
+
+#The Debug version (valgrind version)
+#CFLAGS += -O0 -ggdb -g
+
+#The gprof statistics version
+#CFLAGS	+= -pg
+
+#The gcov coverage version
+#CFLAGS	+= -O0 -fprofile-arcs -ftest-coverage
+
+LIB_A = $(MRMC_HOME_DIR)/lib/mrmc.a
+
+#We use GSL library, which has to be preinstalled.
+LDFLAGS	= -lgsl -lgslcblas -lm -L$(GSL_HOME)/lib
+
+LEX = flex
+LFLAGS =
+
+YACC = bison
+YFLAGS =
+
+AR = ar
+ARFLAGS =
+
+RANLIB = ranlib
+RANLIBFLAGS =
+# RANLIB = @echo ranlib
+
+LINT = splint
+LINTFLAGS = $(INCLUDES) -booltype BOOL -booltrue TRUE -boolfalse FALSE \
+	+fcn-macros -exportlocal

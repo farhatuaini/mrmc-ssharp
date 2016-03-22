@@ -1,0 +1,67 @@
+******************************************************************
+           README: Markov Reward Model Checker (MRMC)
+******************************************************************
+
+MRMC is a command-line tool for model checking discrete-, continuous-
+time Markov chains, and their reward extensions. We partially support
+model checking of continuous-time Markov decision processes.
+
+In this document you will find general information about the MRMC
+distribution.
+
+NOTE: Below we assume that MRMC_HOME is the folder you obtained after
+unpacking the MRMC-distribution archive.
+
+-----------------------------------------------------------------
+                             Contents
+-----------------------------------------------------------------
+ 1. General information
+ 2. Distribution structure
+
+-----------------------------------------------------------------
+                      1. General information
+-----------------------------------------------------------------
+
+The tool is distributed under the GNU General Public License (GPL):
+
+    MRMC_HOME/LICENSE
+
+The current and previous release notes can be found in:
+
+    MRMC_HOME/RELEASENOTES
+
+For details on building, running, using, and testing MRMC, as well as
+licensing and contact information please consider reading the manual:
+
+    MRMC_HOME/doc/MRMC_Manual.pdf
+
+-----------------------------------------------------------------
+                    2. Distribution structure
+-----------------------------------------------------------------
+
+FILE STRUCTURE:
+    -MRMC_HOME/bin/mrmc      -- the MRMC binary
+                                (might not be present before compilation)
+    -MRMC_HOME/lib/mrmc.a    -- the static library containing the MRMC core
+                                (might not be present before compilation)
+    -MRMC_HOME/doc           -- the tool documentation
+    -MRMC_HOME/obj           -- the object-file directory
+    -MRMC_HOME/include       -- the header files
+    -MRMC_HOME/src           -- the source code:
+      -MRMC_HOME/src/storage        -- the internal data structures
+      -MRMC_HOME/src/lumping        -- the lumping algorithms
+      -MRMC_HOME/src/algorithms     -- the numerical and graph analysis
+        -MRMC_HOME/src/algorithms/random_numbers     -- the random-number generators
+      -MRMC_HOME/src/modelchecking  -- the model checking algorithms
+      -MRMC_HOME/src/io             -- the input-processing and mappings to
+                                       the model-checking engine
+          -MRMC_HOME/src/io/parser  -- the parser and lexical analyzer,
+                                       the internal formula-tree traverse,
+                                       the model-checking engine invocation.
+    -MRMC_HOME/test         -- the internal, functional and performance test suites
+                               (might not be present)
+    -MRMC_HOME/LICENSE      -- the licensing information
+    -MRMC_HOME/README       -- the file you are reading now
+    -MRMC_HOME/RELEASENOTES -- the release notes
+    -MRMC_HOME/makefile     -- the main makefile
+    -MRMC_HOME/makefile.def -- the main makefile definitions

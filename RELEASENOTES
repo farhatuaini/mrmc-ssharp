@@ -1,0 +1,306 @@
+-----------------------------------------------------------------
+                   1. The current release notes
+-----------------------------------------------------------------
+
+Current release: 1.5
+
+                              ---Algorithms---
+
+    * Added new algorithm to compute time-bounded reachability probabilities
+      for non-uniform CTMDPIs. This feature is based on "Continuous-Time
+      Stochastic Games with Time-Bounded Reachability" by Brazdil et al.
+    * Bug fixes for time-bounded reachability algorithm for uniform CTMDPIs
+    * Improved partition refinement algorithm for lumping. The new algorithm
+      uses a variant of quicksort instead of splay trees for efficient
+      splitting.
+    * We had planned to introduce an improved data structure for sparce matrices
+      in this version; however, while it provided improvements in bisimulation
+      minimisation, it led to serious degradation in simulation. Therefore, we
+      abandoned this plan.
+
+                              ---Usability---
+
+    * no remarks.
+
+                        ---Source code improvements---
+
+    * gcc generates no more warnings about noncompliance to ANSI C90.
+    * removed superfluous #includes to speed up compilation.
+    * replaced cvs-style keywords (that should indicate the last modification)
+      by svn-style keywords, so that they are updated again.
+    * svn file properties svn:ignore, svn:eol-style, svn:mime-type and
+      svn:executable corrected.
+
+                                ---Testing---
+
+    * internal_tests/test_bscc added (as a regression test for
+      <http://www.mrmc-tool.org/trac/ticket/57>).
+    * internal_tests/test_partition added.
+    * functional_tests/ctmc/csl/operators/time_interval_until/
+      csl_interval_until_04 added (as a regression test for
+      <http://www.mrmc-tool.org/trac/ticket/55> and
+      <http://www.mrmc-tool.org/trac/ticket/56>).
+
+-----------------------------------------------------------------
+                   2. The previous release notes
+-----------------------------------------------------------------
+
+======: 1.4.1
+
+                              ---Algorithms---
+
+    * The pure simulation-based method for model checking steady-state properties of CTMCs.
+      Now, the simulation engine is complete!
+    * Fixed the Fox-Glynn algorithm. In certain cases the computed Poisson probabilities
+      were incorrect. This fix is crucial for computing transient-reachability probabilities
+      of CTMCs (time-interval and time-bounded until).
+
+                              ---Usability---
+
+    * Updated and improved the MRMC manual.
+
+                        ---Source code improvements---
+
+    * none
+
+                                ---Testing---
+
+    * New functional and performance tests for the simulation-base model checking
+      of the steady-state properties on CTMCs
+    * Fixed the sed filtering scripts for the functional and performance (lumping)
+      test suites.
+    * Updated golden files for functional and performance tests with respect to the
+      changes in the Fox-Glynn algorithm.
+
+======: 1.4
+
+                              ---Algorithms---
+
+    * Improved data structure for bitsets.
+    * New algorithms for the bitset data structure, that improve performance significantly.
+    * Two new heuristics to use in hybrid steady-state simulation, which improve
+      simulation performance significantly especially in case of large Markov chains.
+
+                              ---Usability---
+
+    * Extended - PDF format - MRMC manual.
+    * New interface commands, such as "set reg_method_steady" and "set sample_size_step_type"
+      that allow to optionally decide for heuristics in hybrid steady-state simulation.
+    * An optional splint mode allows to check the sources and the tests provided in the
+      test-suite with splint, a tool for statically checking C programs for security
+      vulnerabilities and coding mistakes: http://www.splint.org/
+    * Small formatting improvements.
+
+                        ---Source code improvements---
+
+    * Fixed a bug in the CTMDPI model checking algorithms.
+    * Additional splint annotations added in parts of the source code.
+
+                                ---Testing---
+
+    * New internal and functional tests.
+    * Updated golden files.
+
+======1.3
+
+                              ---Algorithms---
+
+    * The CTMC model checking via discrete event simulation.
+    * The CTMDPI model checking of time bounded reachability properties.
+
+                              ---Usability---
+
+    * New and extended - PDF format - MRMC manual.
+    * New interface commands, such as "print tree" that allows to print the model
+      checking results for the formula and all its sub formulae.
+    * New and context-sensitive "help" and "print" commands.
+    * Simplified internal interfaces: the internal-formula tree allows for an easy
+      and simple access of the verification results.
+
+                        ---Source code improvements---
+
+    * Improved recompilation: the makefiles are optimised to take into account the
+      source-file dependencies.
+    * Memory-leak free tool.
+    * Encapsulated model checking engine: verifying formulae on the basis of the
+      internal formula tree.
+    * Preserved intermediate verification results: all intermediate results are
+      stored in the nodes of the internal-formula tree.
+    * Reorganised sources: the structure of header file folders agrees with the
+      source-files structure.
+    * Warning free sources: produce no warnings under the -Wall, -Wextra, and
+      -pedantic options.
+
+                                ---Testing---
+
+    * Extended and updated manual (PDF version).
+    * New performance tests for the simulation engine.
+    * New internal and functional tests.
+    * Unified, reorganised and improved test scripts.
+    * Improved test-script outputs.
+    * Updated golden files.
+
+======1.2.2
+
+                              ---Algorithms---
+
+    * Added the Gauss-Seidel algorithm for solving systems of linear equations.
+      Which is now set to be the default method when model checking the time-
+      unbounded until operator of the CSL (PCTL) logic.
+    * Added a non-recursive search method for BSCCs to make BSCC search possible when
+      the recursive method runs out of available stack space. This is applicable for
+      model checking the steady-state operator of the CSL (long-run operator of
+      the PCTL) logic, and the on-the-fly steady-state detection for time-bounded
+      and time-interval operators of CSL.
+
+                              ---Usability---
+
+    * MRMC is now compilable and possible to use on MAC OS X.
+    * The command-prompt command 'set method_path' now allows for the value 'gauss_seidel'.
+      The latter means that a more efficient Gauss-Seidel method for solving systems of
+      linear equations is now available for use when model checking time-unbounded and
+      steady-state (long-run) operators of CSL (PCTL) logic.
+    * A new command-prompt command 'set method_bscc' allows to change the BSCC search
+      method. The 'recursive' method is now up to 2 (two) times faster than the one in
+      MRMC version 1.2.1 and the new 'non_recursive' method allows to avoid stack overflows
+      during the BSCC search.
+
+                        ---Source code improvements---
+
+    * Structural changes were made to the bit sets in order to improve the tool performance.
+    * Copying bit sets and setting all bits in a BITNET to one is now more efficient.
+    * Structural changes and optimisations were made in the internal stack structure.
+
+                                ---Testing---
+
+    * Updated internal test to make them run on MAC OS X.
+    * New functional tests were added since Gauss-Seidel algorithm and non-recursive BSCC
+      search are now available.
+    * Added a settings option to define where valgrind log files should be stored when
+      running test with valgrind mode on. For every test an own log file is created.
+    * A technical script for comparing the differences between the output and golden file
+      probabilities was added in order to evaluate result variations for a given error-bound.
+
+======1.2.1
+
+                              ---Algorithms---
+
+    * The uniformization rate (CSL) is now taken as exactly the maximum exit rate
+      It does not influence the steady-state detection but does speed up the
+      convergence.
+    * Improved check for the discretization factor for the Tijms-Veldman Discretization
+      (CSRL time- and reward- bounded until). The optimal discretization rate is suggested
+      now from the start.
+    * The intermediate probabilities for the steady-state operator are now discarded
+      after the MRMC runtime settings are changed (error bound, iterative method for
+      the steady-state operator, and the maximum number of iterations).
+    * The Gauss Seidel iterative method is now set as the default to be used while model checking
+      the steady-state operator.
+    * The probabilistic bounds are now checked taking into account the error bound of computations
+      ('P{ OP R }[ PFL ]', 'L{ OP R }[ SFL ]' and 'S{ OP R }[ SFL ]' formulae).
+      For example, if computations were done with the error bound E and we check
+      for probabilities to be "OP R" then we check the computed values to be "OP (R + E)"
+      for OP in {<, <=} and "OP (R - E)" for OP in {>, >=}.
+
+                              ---Usability---
+
+    * Extended 'print' output with the logic and lumping mode information.
+    * New command-prompt commands allow to access the resulting probabilities by the state id.
+      The same goes for checking whether the state satisfies the formula or not.
+      See '$RESUTL[I]' and '$STATE[I]' for more details.
+    * New command-prompt commands allow for disabling/enabling of results output.
+      See 'set print on' and 'set print off' for more details.
+    * The model-checking results are now printed only for the overall formula, intermediate
+      results are omitted.
+    * Optimised and improved printing of model-checking time. The total-elapsed time is now
+      printed only once, after the model checking of the formula is finished, and is in milliseconds.
+    * An explicit warning is given if an atomic proposition, used in the formula, is not known.
+    * An explicit error message is now given if the iterative method does not converge
+      within the given maximum number of iterations.
+    * Changed warnings in the Fox Glynn algorithm into error messages.
+    * The output for the steady-state (CSL) and long-run (PCTL) operators has slightly changed.
+    * Improved the syntax error messaging in the command prompt.
+    * Changed command-prompt command's syntax:
+       - "ssd_on" turned into "set ssd on"
+       - "ssd_off" turned into "set ssd off"
+
+                        ---Source code improvements---
+
+    * Fixed memory leaking and segmentation faults when provided a syntactically
+      incorrect formula in the command prompt.
+    * Fixed memory leaking in:
+      - Parser component
+      - PRCTL logic model-checking component
+    * Improved token names in the grammar file.
+    * Fixed a bug that allowed MRMC to start in the BLANK mode.
+    * Parser was separated from the business logic of the model checker.
+      See 'src/io/parser' for details.
+    * Fixed a memory-misuse bug for the time bounded until in PCTL logic.
+
+                                ---Testing---
+
+    * Memory statistics for MRMC runs was added into the performance test suite.
+    * Several bugs were fixed in the performance test-suite scripts.
+    * New performance tests for lumping were added:
+    * New functional tests were added for all logics.
+    * The functional test suite was reorganised in order to provide more
+      flexibility for its extension.
+    * Most golden files were updated.
+    * The documentation has been improved and extended.
+
+======1.2
+
+This release contains but is not limited by the following improvements:
+
+                              ---Algorithms---
+
+    * Support of formula dependent and formula independent lumping for PCTL,
+      CSL, PRCTL, CSRL logics.
+        + For the formula-dependent lumping we support only Until operators.
+        + We do not support lumping with impulse rewards for PRCTL and CSRL logics.
+    * The Tijms-Veldman Discretization algorithm for CSRL has now checks for the proper
+      value of discretization factor and resulting probabilities.
+
+                              ---Usability---
+
+    * Improved command-line parameters support and results output:
+         + The order of input-file names and command-line parameters of
+           MRCM is not important any more.
+         + Most probabilities are now printed with the number of digits after the
+           decimal point corresponding to the desired error bound.
+         + Enhanced error and warning messages have been added.
+
+                        ---Source code improvements---
+
+    * Optimised performance, fixed memory leaks and various implementation bugs.
+    * Major source code and built scripts refinement and restructuring was done.
+    * All known compilation warnings were eliminated.
+
+                                ---Testing---
+
+    * An extended, separately distributed, test suite has been added:
+        + New performance tests were added for comparing performance of
+          MRMC with and without lumping:
+            - This includes gathering statistical data and plotting results into pdf files.
+        + Test scripts support for flexible management of the test lists. Such as running internal
+          tests, functional and performance tests in separate and all together. For functional and
+          performance tests it is possible to run tests under Valgrind profiling tool which lets
+          profiling memory management in MRMC on various examples: http://valgrind.org/
+        + The test suite is now freely download-able from:
+            http://www.cs.utwente.nl/~zapreevis/mrmc/downloads.php
+
+======1.1 beta
+
+This release fixes two bugs (see buglist.txt) in implementation related to CSL logic.
+1. BUG 008: The first bug was visible when model checking of the same Next operator
+users were getting different results. When the first run was giving the correct one.
+2. BUG 009: The second bug was related to the Interval Until operator. To make a long story short
+the implementation was flawed and model checking was giving incorrect results, but
+now it seems to be fixed.
+
+The corresponding tests were added to the test suite, see:
+test/functional_tests/csl_interval_until_01
+test/functional_tests/csl_next_01
+
+We would like to thank Jose Martinez <http://www.cs.utwente.nl/~martinez/>
+for detecting these bugs!
