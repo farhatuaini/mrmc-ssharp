@@ -51,6 +51,7 @@
 # include "read_lab_file.h"
 # include "read_mdpi_file.h"
 # include "read_impulse_rewards.h"
+# include "execute_cmd_script.h"
 # include "lump.h"
 # include "parser_to_core.h"
 # include "steady.h"
@@ -84,6 +85,7 @@ int yyparse (void);
 #define TRA_FILE_EXT ".tra"
 #define LAB_FILE_EXT ".lab"
 #define REW_FILE_EXT ".rew"
+#define CMD_FILE_EXT ".cmd"
 #define REWI_FILE_EXT ".rewi"
 #define CTMDPI_FILE_EXT ".ctmdpi"
 
@@ -114,6 +116,7 @@ static labelling *labels = NULL;	/* The labelling */
 static BOOL is_tra_present  = FALSE;
 static BOOL is_lab_present  = FALSE;
 static BOOL is_rew_present  = FALSE;
+static BOOL is_cmd_present  = FALSE;
 static BOOL is_rewi_present = FALSE;
 static BOOL is_ctmdpi_present = FALSE;
 
@@ -123,6 +126,7 @@ static BOOL is_ctmdpi_present = FALSE;
 static const char * tra_file  = NULL;
 static const char * lab_file  = NULL;
 static const char * rew_file  = NULL;
+static const char * cmd_file  = NULL;
 static const char * rewi_file = NULL;
 static const char * ctmdpi_file = NULL;
 
@@ -131,7 +135,7 @@ static const char * ctmdpi_file = NULL;
 */
 static void usage(void)
 {
-	printf("Usage: mrmc <model> <options> <.tra file> <.ctmdpi file> <.lab file> <.rew file> <.rewi file>\n");
+	printf("Usage: mrmc <model> <options> <.tra file> <.ctmdpi file> <.lab file> <.rew file> <.rewi file> <.cmd file>\n");
 	printf("\t<model>\t\t- could be one of {%s, %s, %s, %s, %s}.\n",CTMC_MODE_STR, DTMC_MODE_STR, DMRM_MODE_STR, CMRM_MODE_STR, CTMDPI_MODE_STR);
 	printf("\t<options>\t- could be one of {%s, %s}, optional.\n", F_IND_LUMP_MODE_STR, F_DEP_LUMP_MODE_STR);
 	printf("\t<.tra file>\t- is the file with the matrix of transitions (for DMRM/CMRM, DTMC/CTMC).\n");
@@ -139,6 +143,7 @@ static void usage(void)
 	printf("\t<.lab file>\t- contains labeling.\n");
 	printf("\t<.rew file>\t- contains state rewards (for DMRM/CMRM).\n");
 	printf("\t<.rewi file>\t- contains impulse rewards (for CMRM, optional).\n");
+	printf("\t<.cmd file>\t- contains script to execute (optional).\n");
 	printf("\nNote: In the '.tra' and '.ctmdpi' file transitions should be ordered by rows and columns!\n\n");
 }
 
@@ -557,6 +562,13 @@ static void parseInParamsAndInitialize(int argc, char *argv[])
 					}else{
 						printf("WARNING: The '%s' file has been noticed before, skipping the '%s' file.\n", ctmdpi_file, argv[i]);
 					}
+				}else if ( strcmp(expension, CMD_FILE_EXT) == 0 ){
+					if( !is_cmd_present ){
+							is_cmd_present = TRUE;
+							cmd_file = argv[i];
+					}else{
+						printf("WARNING: The '%s' file has been noticed before, skipping the '%s' file.\n", cmd_file, argv[i]);
+					}
 				} else {
 				    printf("WARNING: An unknown file type '%s' for input file '%s', skipping.\n", expension, argv[i]);
 				}
@@ -642,6 +654,7 @@ int main(int argc, char *argv[])
 #ifndef __APPLE__
 	unsigned int sp1=0,sp2=0;
 #endif
+	int exitAfterCmdScript = 0;
 
 	/* Pring the introduction message */
 	print_intro();
@@ -666,19 +679,27 @@ int main(int argc, char *argv[])
 	doFormulaIndependentLumping();
 
 	printf("Type 'help' to get help.\n>>");
-
-	while( yyparse() )
+	
+	if (is_cmd_present)
 	{
-		printf(">>");
+		exitAfterCmdScript = execute_cmd_script(cmd_file);
+	}
+	
+	if (exitAfterCmdScript==0)
+	{
+		while( yyparse() )
+		{
+			printf(">>");
+		}
 	}
 
-        if ( ! isRunMode(CTMDPI_MODE) ) {
-                if ( err_state_iserror(free_sparse_ncolse(space)) ) {
-                        err_msg_2(err_CALLBY, "main(%d,%p)", argc, (void*) argv,
-                                EXIT_FAILURE);
-                }
-        }
-        space = NULL; set_state_space(NULL);
+	if ( ! isRunMode(CTMDPI_MODE) ) {
+			if ( err_state_iserror(free_sparse_ncolse(space)) ) {
+					err_msg_2(err_CALLBY, "main(%d,%p)", argc, (void*) argv,
+							EXIT_FAILURE);
+			}
+	}
+	space = NULL; set_state_space(NULL);
 	/* NOTE: At the moment there is no need to call free_row_sums */
 	/* method because it is done when we do set_state_space(NULL)*/
 	free_labelling(labels); labels = NULL; set_labeller(NULL);

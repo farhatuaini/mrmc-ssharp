@@ -68,6 +68,7 @@ LIB_SRC +=	$(SRC_DIR)/io/read_impulse_rewards.c \
 	$(SRC_DIR)/io/read_rewards.c \
 	$(SRC_DIR)/io/read_tra_file.c \
 	$(SRC_DIR)/io/read_mdpi_file.c \
+	$(SRC_DIR)/io/execute_cmd_script.c \
 	$(SRC_DIR)/io/token.c
 LIB_SRC +=	$(SRC_DIR)/io/parser/core_to_core.c \
 	$(SRC_DIR)/io/parser/parser_to_core.c \
