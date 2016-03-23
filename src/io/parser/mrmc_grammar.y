@@ -53,6 +53,8 @@
 
 #include "runtime.h"
 
+#include "write_res_file.h"
+
 #define YYERROR_VERBOSE 1
 
 extern int yylex(void);
@@ -75,7 +77,7 @@ void yyerror(const char * s);
 
 %nonassoc LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLY_BRACKET
 			RIGHT_CURLY_BRACKET LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
-			GREATER GREATER_OR_EQUAL LESS LESS_OR_EQUAL PRINT TREE
+			GREATER GREATER_OR_EQUAL LESS LESS_OR_EQUAL PRINT TREE WRITE_RES_FILE
 			ERROR_BOUND OVERFLOW_VAL UNDERFLOW_VAL METHOD_PATH
 			METHOD_STEADY METHOD_BSCC COMMA COMPLEMENT QUIT SET
 			STEADY_STATE_F GAUSS_JACOBI_M GAUSS_SEIDEL_M RECURSIVE_M
@@ -215,6 +217,14 @@ mformula		: NEWLINE
 			| STATE LEFT_SQUARE_BRACKET DOUBLE_VALUE RIGHT_SQUARE_BRACKET NEWLINE
 			{
 				printResultingStateSatisfyability( (int) $3 );
+				return 1;
+			}
+/********************************************************************************/
+/******************SET THE WRITING OF THE RESULTS FILE***************************/
+/********************************************************************************/
+			| WRITE_RES_FILE double_val_list NEWLINE
+			{
+				write_res_file();
 				return 1;
 			}
 /********************************************************************************/
@@ -464,6 +474,10 @@ factorformula		: LEFT_PARENTHESIS stateformula RIGHT_PARENTHESIS
 			{
 				$$ = $1;
 			}
+/**********************List of DOUBLE_VALUEs used in WRITE_RES_FILE***********************/
+double_val_list:
+	DOUBLE_VALUE double_val_list { write_res_file_add($1); }	
+    | DOUBLE_VALUE { write_res_file_add($1); }
 
 /***************The complex formulas, treated as "atomic", are listed below***************/
 			/*RESULT IN A BITSET OF SATISFYING STATES

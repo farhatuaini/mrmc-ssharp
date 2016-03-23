@@ -33,18 +33,36 @@
 *	Source description: Read and execute Command (.cmd) script.
 */
 
-#ifndef EXECUTE_CMD_SCRIPT_H
-#define EXECUTE_CMD_SCRIPT_H
+#ifndef WRITE_RES_FILE_H
+#define WRITE_RES_FILE_H
 
 #include "label.h"
 
 /*****************************************************************************
-name		: execute_cmd_script
-role		: reads and executes a .cmd file
-@param		: char *filename: input .cmd file's name.
-@return		: int: returns 0 if the program should exit after execution.
+name		: write_res_file
+role		: writes the res file with all requested states.
+@return		: void
 remark		:
 ******************************************************************************/
-extern int execute_cmd_script(const char *);
+extern void write_res_file();
+
+
+/*****************************************************************************
+name		: write_res_file_initialize
+role		: Initialize the array to store the requested states to write
+@return		: void
+remark		:
+******************************************************************************/
+extern void write_res_file_initialize(void);
+
+
+/*****************************************************************************
+name		: write_res_file_add
+role		: Initialize the array to store the requested states to write
+@param		: int stateToWrite: add new state to write.
+@return		: void
+remark		:
+******************************************************************************/
+extern void write_res_file_add(int stateToWrite);
 
 #endif

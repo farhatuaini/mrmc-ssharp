@@ -52,6 +52,7 @@
 # include "read_mdpi_file.h"
 # include "read_impulse_rewards.h"
 # include "execute_cmd_script.h"
+# include "write_res_file.h"
 # include "lump.h"
 # include "parser_to_core.h"
 # include "steady.h"
@@ -86,6 +87,7 @@ int yyparse (void);
 #define LAB_FILE_EXT ".lab"
 #define REW_FILE_EXT ".rew"
 #define CMD_FILE_EXT ".cmd"
+#define RES_FILE_EXT ".res"
 #define REWI_FILE_EXT ".rewi"
 #define CTMDPI_FILE_EXT ".ctmdpi"
 
@@ -117,6 +119,7 @@ static BOOL is_tra_present  = FALSE;
 static BOOL is_lab_present  = FALSE;
 static BOOL is_rew_present  = FALSE;
 static BOOL is_cmd_present  = FALSE;
+static BOOL is_res_present  = FALSE;
 static BOOL is_rewi_present = FALSE;
 static BOOL is_ctmdpi_present = FALSE;
 
@@ -127,6 +130,7 @@ static const char * tra_file  = NULL;
 static const char * lab_file  = NULL;
 static const char * rew_file  = NULL;
 static const char * cmd_file  = NULL;
+extern const char * res_file;
 static const char * rewi_file = NULL;
 static const char * ctmdpi_file = NULL;
 
@@ -144,6 +148,7 @@ static void usage(void)
 	printf("\t<.rew file>\t- contains state rewards (for DMRM/CMRM).\n");
 	printf("\t<.rewi file>\t- contains impulse rewards (for CMRM, optional).\n");
 	printf("\t<.cmd file>\t- contains script to execute (optional).\n");
+	printf("\t<.res file>\t- filename where write_res_file writes the results to (optional).\n");
 	printf("\nNote: In the '.tra' and '.ctmdpi' file transitions should be ordered by rows and columns!\n\n");
 }
 
@@ -569,7 +574,14 @@ static void parseInParamsAndInitialize(int argc, char *argv[])
 					}else{
 						printf("WARNING: The '%s' file has been noticed before, skipping the '%s' file.\n", cmd_file, argv[i]);
 					}
-				} else {
+				}else if ( strcmp(expension, RES_FILE_EXT) == 0 ){
+					if( !is_res_present ){
+							is_res_present = TRUE;
+							res_file = argv[i];
+					}else{
+						printf("WARNING: The '%s' file has been noticed before, skipping the '%s' file.\n", res_file, argv[i]);
+					}
+				}else {
 				    printf("WARNING: An unknown file type '%s' for input file '%s', skipping.\n", expension, argv[i]);
 				}
 			} else {
@@ -588,6 +600,9 @@ static void parseInParamsAndInitialize(int argc, char *argv[])
 	loadLabels( lab_file );
 	loadStateRewards( rew_file );
 	loadImpulseRewards( rewi_file);
+	
+	/* Initialize the array to store the requested states to write */
+	write_res_file_initialize();
 
 	/* If we are in the test mode then just test and exit. */
 	if( isRunMode(TEST_VMV_MODE) )

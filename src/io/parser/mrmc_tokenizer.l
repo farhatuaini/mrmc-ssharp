@@ -85,6 +85,8 @@ white    [ \t\n\r\b]
 "print"		{ if(prc(pr)) printf("PRINT   : %s\n",yytext); return PRINT;}
 "tree"		{ if(prc(pr)) printf("TREE   : %s\n",yytext); return TREE;}
 
+"write_res_file"		{ if(prc(pr)) printf("WRITE_RES_FILE   : %s\n",yytext); return WRITE_RES_FILE;}
+
 "set"		{ if(prc(pr)) printf("SET   : %s\n",yytext); return SET;}
 "w"		{ if(prc(pr)) printf("PROB_THRESHOLD_QURESHI_SANDERS   : %s\n",yytext); return PROB_THRESHOLD_QURESHI_SANDERS;}
 "d"		{ if(prc(pr)) printf("DISCRETIZATION_FACTOR   : %s\n",yytext); return DISCRETIZATION_FACTOR;}
