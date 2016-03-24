@@ -139,7 +139,7 @@ static const char * ctmdpi_file = NULL;
 */
 static void usage(void)
 {
-	printf("Usage: mrmc <model> <options> <.tra file> <.ctmdpi file> <.lab file> <.rew file> <.rewi file> <.cmd file>\n");
+	printf("Usage: mrmc <model> <options> <.tra file> <.ctmdpi file> <.lab file> <.rew file> <.rewi file> <.cmd file> <.res file>\n");
 	printf("\t<model>\t\t- could be one of {%s, %s, %s, %s, %s}.\n",CTMC_MODE_STR, DTMC_MODE_STR, DMRM_MODE_STR, CMRM_MODE_STR, CTMDPI_MODE_STR);
 	printf("\t<options>\t- could be one of {%s, %s}, optional.\n", F_IND_LUMP_MODE_STR, F_DEP_LUMP_MODE_STR);
 	printf("\t<.tra file>\t- is the file with the matrix of transitions (for DMRM/CMRM, DTMC/CTMC).\n");
