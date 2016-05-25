@@ -117,39 +117,43 @@ static void print_state_prob_to_file( FILE *p, const int index, const int size, 
 }
 
 /**
-* Derived from print_state_prob in runtime.c
+* Derived from print_state in runtime.c
 */
-static void print_state_to_file( const bitset * pBitset, const int index, const char * name ){
-	/* TODO
+static void print_state_sat_to_file( FILE *p, const bitset * pBitset, const int index ){
 	const partition * P_local = getPartition();
 
-	printf("%s[%d] = ", name, index+1);
-        if ( isRunMode(F_IND_LUMP_MODE) && NULL != P_local ) {
-                print_original_state(P_local, pBitset, index);
+	fprintf(p, "%d ", index + 1);
+       
+	if ( isRunMode(F_IND_LUMP_MODE) && NULL != P_local ) {
+		/*
+		TODO
+			print_original_state(P_local, pBitset, index);
+		*/
 	}else{
 		if( pBitset != NULL ){
-                        if ( 0 <= index && index < bitset_size(pBitset) ) {
+			if ( 0 <= index && index < bitset_size(pBitset) ) {
 				if( get_bit_val( pBitset, index ) ){
-					printf("TRUE");
+					fprintf(p,"TRUE\n");
 				}else{
-					printf("FALSE");
+					fprintf(p,"FALSE\n");
 				}
 			}else{
-				printf("??\n");
+				fprintf(p,"??\n");
                                 printf("WARNING: Invalid index %d, required to "
                                        "be in the [1, %d] interval.",
                                        index + 1, bitset_size(pBitset));
 			}
 		}else{
-			printf("??\n");
+			fprintf(p,"??\n");
 			printf("WARNING: Trying to print an element of a non-existing bitset.");
 		}
 	}
-	printf("\n");
-	*/
 }
 
-static void write_res_file_state(PTFTypeRes pFTypeRes, FILE *p, const int index){
+/**
+* Derived from printResultingStateProbability in parser_to_core.c
+*/
+static void write_result_of_state_to_res_file(PTFTypeRes pFTypeRes, FILE *p, const int index){
 	PTCompStateF pCompStateF; PTFTypeRes pFTypeResSubForm;
 	
 	/* Convert the user-level state index into the internal index */
@@ -172,15 +176,29 @@ static void write_res_file_state(PTFTypeRes pFTypeRes, FILE *p, const int index)
 					pFTypeResSubForm->pProbRewardResult,
 					pFTypeResSubForm->error_bound, pFTypeResSubForm->pErrorBound );
 		}
-	}else if( pFTypeRes != NULL ){
-		/* TODO		
+	}else{
+		printf("WARNING: There are NO results to print.\n");
+	}
+}
+
+/**
+* Derived from printResultingStateSatisfyability in parser_to_core.c
+*/
+static void write_satisfiability_of_state_to_res_file(PTFTypeRes pFTypeRes, FILE *p, const int index){
+	PTCompStateF pCompStateF; PTFTypeRes pFTypeResSubForm;
+	
+	/* Convert the user-level state index into the internal index */
+	const int internal_state_index = index - 1;
+
+	if( pFTypeRes != NULL ){
 		if( pFTypeRes->doSimHere || pFTypeRes->doSimBelow ){
-			print_state_to_file( pFTypeRes->pYesBitsetResult, index - 1, YES_STATES_STR );
-			print_state_to_file( pFTypeRes->pNoBitsetResult, index - 1, NO_STATES_STR );
+			/* TODO:
+			print_state_to_file(p, pFTypeRes->pYesBitsetResult, index - 1, YES_STATES_STR );
+			print_state_to_file(p, pFTypeRes->pNoBitsetResult, index - 1, NO_STATES_STR );
+			*/
 		} else {
-			print_state_to_file( pFTypeRes->pYesBitsetResult, index - 1, YES_NO_STATES_STR );
+			print_state_sat_to_file(p, pFTypeRes->pYesBitsetResult, internal_state_index );
 		}
-		*/		
 	}else{
 		printf("WARNING: There are NO results to print.\n");
 	}
@@ -188,12 +206,13 @@ static void write_res_file_state(PTFTypeRes pFTypeRes, FILE *p, const int index)
 
 
 /*****************************************************************************
-name		: write_res_file
-role		: writes a .res file containing the results of the last calculation
+name		: write_res_file_state
+role		: writes the res file with all requested states. Prints
+              satisfiability.
 @return		: void
 remark		:
 ******************************************************************************/
-void write_res_file() {	
+void write_res_file_state() {	
 	FILE *p;
 	
 	int i;
@@ -212,7 +231,40 @@ void write_res_file() {
 		int listElement = numberOfElements - i - 1; /* List is reverse */
 		int state = write_res_file_statesToWrite.statesToWrite[listElement];
 		/* printf("Write state %d\n",state); */
-		write_res_file_state(pFTypeRes,p,state);
+		write_satisfiability_of_state_to_res_file(pFTypeRes,p,state);
+	}
+	
+	(void)fclose(p);
+	write_res_file_reset();
+}
+
+/*****************************************************************************
+name		: write_res_file_result
+role		: writes the res file with all requested states. Prints calculated
+              result (either probability or reward).
+@return		: void
+remark		:
+******************************************************************************/
+void write_res_file_result() {	
+	FILE *p;
+	
+	int i;
+	int numberOfElements;
+	
+	numberOfElements = write_res_file_statesToWrite.length;
+	
+	PTFTypeRes pFTypeRes = (PTFTypeRes) get_formula_tree_result();
+	
+	printf("Writing results to file '%s'\n", res_file);
+	
+	p = fopen(res_file,"w+");
+	
+	for(i=0;i<numberOfElements;i++)
+	{		
+		int listElement = numberOfElements - i - 1; /* List is reverse */
+		int state = write_res_file_statesToWrite.statesToWrite[listElement];
+		/* printf("Write state %d\n",state); */
+		write_result_of_state_to_res_file(pFTypeRes,p,state);
 	}
 	
 	(void)fclose(p);

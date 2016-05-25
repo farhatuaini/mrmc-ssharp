@@ -39,13 +39,22 @@
 #include "label.h"
 
 /*****************************************************************************
-name		: write_res_file
-role		: writes the res file with all requested states.
+name		: write_res_file_state
+role		: writes the res file with all requested states. Prints
+              satisfiability.
 @return		: void
 remark		:
 ******************************************************************************/
-extern void write_res_file();
+extern void write_res_file_state();
 
+/*****************************************************************************
+name		: write_res_file_result
+role		: writes the res file with all requested states. Prints calculated
+              result (either probability or reward).
+@return		: void
+remark		:
+******************************************************************************/
+extern void write_res_file_result();
 
 /*****************************************************************************
 name		: write_res_file_initialize

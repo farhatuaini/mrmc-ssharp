@@ -77,7 +77,8 @@ void yyerror(const char * s);
 
 %nonassoc LEFT_PARENTHESIS RIGHT_PARENTHESIS LEFT_CURLY_BRACKET
 			RIGHT_CURLY_BRACKET LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
-			GREATER GREATER_OR_EQUAL LESS LESS_OR_EQUAL PRINT TREE WRITE_RES_FILE
+			GREATER GREATER_OR_EQUAL LESS LESS_OR_EQUAL PRINT TREE
+			WRITE_RES_FILE_STATE WRITE_RES_FILE_RESULT
 			ERROR_BOUND OVERFLOW_VAL UNDERFLOW_VAL METHOD_PATH
 			METHOD_STEADY METHOD_BSCC COMMA COMPLEMENT QUIT SET
 			STEADY_STATE_F GAUSS_JACOBI_M GAUSS_SEIDEL_M RECURSIVE_M
@@ -222,9 +223,14 @@ mformula		: NEWLINE
 /********************************************************************************/
 /******************SET THE WRITING OF THE RESULTS FILE***************************/
 /********************************************************************************/
-			| WRITE_RES_FILE double_val_list NEWLINE
+			| WRITE_RES_FILE_STATE double_val_list NEWLINE
 			{
-				write_res_file();
+				write_res_file_state();
+				return 1;
+			}
+			| WRITE_RES_FILE_RESULT double_val_list NEWLINE
+			{
+				write_res_file_result();
 				return 1;
 			}
 /********************************************************************************/
